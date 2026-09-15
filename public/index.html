@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVMatch AI - Optimiza tu CV para cada empleo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 22px 18px;
+    }
+    header .container {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .logo span { color: #60a5fa; }
+    .hero {
+      max-width: 1000px;
+      margin: 45px auto 25px;
+      padding: 0 18px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+    .hero p {
+      font-size: 19px;
+      color: #596579;
+      max-width: 700px;
+      margin: auto;
+      line-height: 1.5;
+    }
+    .card {
+      max-width: 850px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 18px 0 8px;
+    }
+    input[type="file"], textarea {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d5dbe5;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    textarea {
+      min-height: 190px;
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    button:disabled {
+      background: #94a3b8;
+      cursor: wait;
+    }
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+    #results {
+      display: none;
+      margin-top: 30px;
+    }
+    .score {
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      background: #eff6ff;
+      margin-bottom: 20px;
+    }
+    .score-number {
+      font-size: 58px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+    .result-section {
+      border-top: 1px solid #e5e7eb;
+      padding: 20px 0;
+    }
+    .result-section h3 {
+      margin-top: 0;
+    }
+    .tag {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 6px 10px;
+      border-radius: 20px;
+      margin: 4px;
+      font-size: 13px;
+    }
+    .error {
+      color: #dc2626;
+    }
+    footer {
+      text-align: center;
+      padding: 35px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    @media(max-width:600px) {
+      .hero h1 { font-size: 31px; }
+      .card { margin: 20px 12px; padding: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">CVMatch <span>AI</span></div>
+    <div>Tu CV. Tu próximo empleo.</div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>¿Qué tan bien encaja tu CV con una oferta?</h1>
+  <p>
+    Analiza tu CV frente a una oferta laboral y descubre tu nivel de compatibilidad,
+    palabras clave ATS, fortalezas y oportunidades de mejora.
+  </p>
+</section>
+
+<div class="card">
+
+  <label for="cv">1. Sube tu CV</label>
+  <input id="cv" type="file" accept=".pdf,.docx">
+
+  <label for="job">2. Pega la descripción del puesto</label>
+  <textarea id="job" placeholder="Pega aquí la descripción completa de la oferta laboral..."></textarea>
+
+  <button id="analyzeBtn" onclick="analyzeCV()">
+    Analizar mi CV con IA
+  </button>
+
+  <div id="status"></div>
+
+  <div id="results">
+
+    <div class="score">
+      <div>Match Score</div>
+      <div id="score" class="score-number">0%</div>
+      <div id="summary"></div>
+    </div>
+
+    <div class="result-section">
+      <h3>✅ Fortalezas</h3>
+      <ul id="strengths"></ul>
+    </div>
+
+    <div class="result-section">
+      <h3>⚠️ Brechas</h3>
+      <ul id="gaps"></ul>
+    </div>
+
+    <div class="result-section">
+      <h3>🔑 Palabras clave encontradas</h3>
+      <div id="keywordsFound"></div>
+    </div>
+
+    <div class="result-section">
+      <h3>❌ Palabras clave faltantes</h3>
+      <div id="keywordsMissing"></div>
+    </div>
+
+    <div class="result-section">
+      <h3>💡 Recomendaciones</h3>
+      <ul id="recommendations"></ul>
+    </div>
+
+    <div class="result-section">
+      <h3>📄 CV optimizado</h3>
+      <div id="optimizedCV"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  CVMatch AI © 2026 — Optimización inteligente de CV para procesos de selección.
+</footer>
+
+<script>
+async function analyzeCV() {
+
+  const fileInput = document.getElementById("cv");
+  const jobText = document.getElementById("job").value.trim();
+  const button = document.getElementById("analyzeBtn");
+  const status = document.getElementById("status");
+  const results = document.getElementById("results");
+
+  if (!fileInput.files.length) {
+    status.innerHTML = '<span class="error">Selecciona tu CV en PDF o DOCX.</span>';
+    return;
+  }
+
+  if (!jobText) {
+    status.innerHTML = '<span class="error">Pega primero la descripción del puesto.</span>';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("cv", fileInput.files[0]);
+  formData.append("jobText", jobText);
+
+  button.disabled = true;
+  button.innerText = "Analizando...";
+  status.innerText = "La IA está analizando tu CV...";
+  results.style.display = "none";
+
+  try {
+
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo realizar el análisis.");
+    }
+
+    document.getElementById("score").innerText =
+      (data.matchScore ?? data.score ?? 0) + "%";
+
+    document.getElementById("summary").innerText =
+      data.summary || "";
+
+    fillList("strengths", data.strengths);
+    fillList("gaps", data.gaps);
+    fillList("recommendations", data.recommendations);
+
+    fillTags("keywordsFound",
+      data.keywordsFound || data.keywords_found || []);
+
+    fillTags("keywordsMissing",
+      data.keywordsMissing || data.keywords_missing || []);
+
+    const optimized =
+      data.optimizedCV ||
+      data.optimized_cv ||
+      data.optimizedResume ||
+      "";
+
+    document.getElementById("optimizedCV").innerHTML =
+      optimized
+        ? "<pre style='white-space:pre-wrap;font-family:Arial;line-height:1.5'>" +
+          escapeHtml(optimized) +
+          "</pre>"
+        : "La versión optimizada estará disponible en la siguiente versión.";
+
+    results.style.display = "block";
+    status.innerText = "Análisis completado.";
+
+  } catch (error) {
+
+    status.innerHTML =
+      '<span class="error">' + escapeHtml(error.message) + "</span>";
+
+  } finally {
+
+    button.disabled = false;
+    button.innerText = "Analizar mi CV con IA";
+  }
+}
+
+function fillList(id, items) {
+
+  const element = document.getElementById(id);
+  element.innerHTML = "";
+
+  if (!Array.isArray(items)) return;
+
+  items.forEach(item => {
+
+    const li = document.createElement("li");
+    li.textContent = item;
+    li.style.marginBottom = "8px";
+    element.appendChild(li);
+
+  });
+}
+
+function fillTags(id, items) {
+
+  const element = document.getElementById(id);
+  element.innerHTML = "";
+
+  if (!Array.isArray(items)) return;
+
+  items.forEach(item => {
+
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = item;
+    element.appendChild(span);
+
+  });
+}
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+</script>
+
+</body>
+</html>
