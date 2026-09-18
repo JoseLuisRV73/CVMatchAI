@@ -139,4 +139,4 @@ app.use((err, req, res, next) => {
   res.status(400).json({ error: err.message || "Solicitud inválida." });
 });
 
-app.listen(port, () => console.log(`CVMatch AI running on http://localhost:${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`CVMatch AI running on port ${port}`));
