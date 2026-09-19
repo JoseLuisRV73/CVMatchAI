@@ -246,7 +246,7 @@ async function analyzeCV() {
 
   try {
 
-    const response = await fetch("/api/analyze", {
+    const response = await fetch("https://cvmatchai.onrender.com/api/analyze", {
       method: "POST",
       body: formData
     });
